@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ASTROLEX | The Encyclopedia of Space Law & Jurisprudence</title>
+  <link rel="icon" type="image/x-icon" href="images.jpeg">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #03050b;
+      font-family: 'Inter', sans-serif;
+      color: #eef5ff;
+      overflow-x: hidden;
+    }
+    #canvas-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 2rem 2rem 4rem;
+      position: relative;
+      z-index: 10;
+    }
+    .hero {
+      min-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+    .hero-badge {
+      background: rgba(0, 255, 255, 0.12);
+      backdrop-filter: blur(12px);
+      padding: 0.5rem 1.5rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      font-weight: 500;
+      border: 1px solid rgba(0, 255, 255, 0.5);
+      margin-bottom: 2rem;
+    }
+    .hero h1 {
+      font-size: 6rem;
+      font-weight: 800;
+      font-family: 'Syne', sans-serif;
+      background: linear-gradient(135deg, #FFFFFF, #7bc5ff, #a07eff, #3efffa);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.03em;
+      text-shadow: 0 0 40px rgba(0, 200, 255, 0.3);
+    }
+    .hero-glow {
+      font-size: 1.25rem;
+      max-width: 850px;
+      color: #bcd0ff;
+      margin: 1rem 0 2rem;
+    }
+    .law-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.8rem;
+      margin: 2.5rem 0 2rem;
+    }
+    .nav-btn {
+      background: rgba(10, 20, 40, 0.6);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 180, 255, 0.4);
+      padding: 0.7rem 1.5rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #eef5ff;
+    }
+    .nav-btn i { margin-right: 8px; }
+    .nav-btn:hover, .nav-btn.active {
+      background: #0f2b4f;
+      border-color: #3efffa;
+      box-shadow: 0 0 18px rgba(62, 255, 250, 0.3);
+      transform: translateY(-3px);
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 1.8rem;
+      margin: 2rem 0 2rem;
+    }
+    .card {
+      background: rgba(6, 14, 26, 0.75);
+      backdrop-filter: blur(14px);
+      border-radius: 1.8rem;
+      border: 1px solid rgba(0, 200, 255, 0.25);
+      padding: 1.8rem;
+      transition: all 0.4s;
+    }
+    .card:hover {
+      border-color: #3efffa;
+      transform: translateY(-6px);
+      background: rgba(12, 28, 48, 0.88);
+      box-shadow: 0 30px 40px -15px rgba(0, 200, 255, 0.2);
+    }
+    .card h3 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      font-family: 'Syne', sans-serif;
+      margin-bottom: 1rem;
+      background: linear-gradient(120deg, #fff, #8bcbff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card h3 i { color: #3efffa; text-shadow: 0 0 5px cyan; font-size: 1.5rem; }
+    .card p, .card li { font-size: 0.9rem; line-height: 1.5; color: #cdddfc; margin-bottom: 0.5rem; }
+    .card ul { padding-left: 1.2rem; margin-top: 0.5rem; }
+    .highlight {
+      background: linear-gradient(90deg, #00aaff30, transparent);
+      padding: 0.1rem 0.4rem;
+      border-radius: 8px;
+      font-family: 'Space Mono', monospace;
+      color: #aaffff;
+      border-left: 2px solid cyan;
+    }
+    .dynamic-section {
+      background: rgba(0, 8, 20, 0.7);
+      backdrop-filter: blur(20px);
+      border-radius: 2rem;
+      padding: 2rem;
+      margin: 2rem 0;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: 'Syne', sans-serif;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title i { color: #3efffa; filter: drop-shadow(0 0 6px cyan); }
+    #dynamicContent { transition: opacity 0.2s; min-height: 420px; }
+    .treaty-item, .principle-item, .case-item, .theory-item, .regime-item {
+      background: rgba(0, 20, 40, 0.6);
+      padding: 0.9rem 1.2rem;
+      border-radius: 1rem;
+      border-left: 4px solid #00e0ff;
+      margin-bottom: 0.8rem;
+      font-size: 0.9rem;
+    }
+    .quote-block {
+      font-style: italic;
+      padding: 1rem 1.5rem;
+      background: #00182e80;
+      border-radius: 1.2rem;
+      margin: 1rem 0;
+      border-left: 4px solid #ffb347;
+    }
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      margin: 2rem 0;
+    }
+    .stat-card {
+      background: linear-gradient(135deg, #0a1430, #020812);
+      border-radius: 1.5rem;
+      padding: 1rem;
+      flex: 1;
+      text-align: center;
+      border: 1px solid cyan;
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
+    }
+    .two-col-text {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 1rem 0;
+    }
+    footer {
+      margin-top: 4rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #6f8fbb;
+      border-top: 1px solid rgba(0, 200, 255, 0.3);
+      padding-top: 2rem;
+    }
+    @media (max-width: 768px) { .hero h1 { font-size: 3rem; } .container { padding: 1rem; } }
+  </style>
+</head>
+<body>
+<canvas id="canvas-bg"></canvas>
+<div class="container">
+  <div class="hero">
+    <div class="hero-badge"><i class="fas fa-gavel"></i> LEX SPATIALIS · DEFINITIVE ENCYCLOPEDIA</div>
+    <h1>ASTROLEX</h1>
+    <div class="hero-glow">Complete reference on outer space treaties, customary law, institutional frameworks, critical legal theory, and emerging governance for the cosmic age.</div>
+    <div class="law-nav" id="topicNav">
+      <button data-topic="treaties" class="nav-btn active"><i class="fas fa-file-contract"></i> Treaties</button>
+      <button data-topic="principles" class="nav-btn"><i class="fas fa-universal-access"></i> UN Principles</button>
+      <button data-topic="theory" class="nav-btn"><i class="fas fa-brain"></i> Deep Theory</button>
+      <button data-topic="issues" class="nav-btn"><i class="fas fa-satellite-dish"></i> Emerging Issues</button>
+      <button data-topic="caselaw" class="nav-btn"><i class="fas fa-gavel"></i> Case Law</button>
+      <button data-topic="comparative" class="nav-btn"><i class="fas fa-globe"></i> National Regimes</button>
+      <button data-topic="institutions" class="nav-btn"><i class="fas fa-building"></i> Institutions</button>
+    </div>
+  </div>
+
+  <!-- ROW 1: Massive information cards -->
+  <div class="info-grid">
+    <div class="card">
+      <h3><i class="fas fa-meteor"></i> Outer Space Treaty (1967)</h3>
+      <p><span class="highlight">114 parties · Cornerstone of space law</span> — Article I: free exploration; Art II: no national appropriation; Art III: compliance with UN Charter; Art IV: ban on WMD in orbit; Art VI: state responsibility for commercial actors; Art VII: liability; Art VIII: jurisdiction over objects; Art IX: harmful interference & consultation; Art X-XV: cooperation, visits to space stations, dispute settlement.</p>
+      <ul><li>Over 100+ national space laws derived from OST principles.</li><li>Interpretive debates: "peaceful purposes" allows military use not aggressive.</li></ul>
+    </div>
+    <div class="card">
+      <h3><i class="fas fa-moon"></i> Moon Agreement (1979)</h3>
+      <p><span class="highlight">Common Heritage of Mankind (CHM)</span> — Article 11: Moon and its natural resources are common heritage. Requires international regime for resource exploitation. Only 18 ratifications, but influential for seabed mining and lunar governance.</p>
+      <ul><li>Art 6: freedom of scientific investigation; Art 7: protection of lunar environment; Art 8: demilitarization.</li><li>Resurgence in lunar policy debates (2025-2030).</li></ul>
+    </div>
+    <div class="card">
+      <h3><i class="fas fa-handcuffs"></i> Liability & Registration</h3>
+      <p><strong>Liability Convention (1972):</strong> Absolute liability for surface damage (Earth), fault liability in space. Joint & several liability for joint launches. <strong>Registration Convention (1976):</strong> mandatory UN registry of space objects, orbital parameters, function.</p>
+      <ul><li>Cosmos 954 (1978) remains only settled liability claim ($3M CAD).</li><li>Registration gaps: military satellites often omit details.</li></ul>
+    </div>
+  </div>
+
+  <!-- ROW 2: Legal theory + soft law -->
+  <div class="info-grid">
+    <div class="card">
+      <h3><i class="fas fa-balance-scale"></i> UNCOPUOS Principles</h3>
+      <p><strong>Remote Sensing (1986):</strong> nondiscriminatory access; <strong>Nuclear Power Sources (1992):</strong> safety assessments; <strong>Debris Mitigation (2007):</strong> 25-year disposal rule; <strong>Long-Term Sustainability (2019):</strong> 21 guidelines including space traffic coordination.</p>
+      <p><strong>Hague Building Blocks (2019):</strong> 11 principles for space resources: transparency, prior consultation, benefit-sharing, registry.</p>
+    </div>
+    <div class="card">
+      <h3><i class="fas fa-brain"></i> Critical Legal Theories</h3>
+      <p><span class="highlight">Jus Cogens:</span> non-appropriation & peaceful purposes as peremptory norms. <strong>Postcolonial critique:</strong> space law as hegemonic tool; need for Global South inclusion. <strong>Feminist jurisprudence:</strong> care ethics, reproductive rights in space. <strong>Cosmopolitan democracy:</strong> World Space Organization proposal. <strong>Ecological materialism:</strong> planetary boundaries extended to celestial bodies.</p>
+    </div>
+    <div class="card">
+      <h3><i class="fas fa-chart-line"></i> Space Economy & Property</h3>
+      <p>Global space economy: <span class="highlight">$630B (2023) → $1.8T by 2035.</span> Legal clash: US/Luxembourg national laws allow asteroid resource rights vs. Moon Agreement's CHM. <strong>Hague Working Group</strong> seeks compromise via international authorization mechanism.</p>
+      <ul><li>Artemis Accords (29 signatories): "safety zones" and resource extraction rights.</li></ul>
+    </div>
+  </div>
+
+  <!-- ROW 3: Emerging issues + enforcement -->
+  <div class="info-grid">
+    <div class="card">
+      <h3><i class="fas fa-space-shuttle"></i> Mega-Constellations</h3>
+      <p>Starlink (6k+ sats), OneWeb, Kuiper — orbital congestion, light pollution, collision risk. <strong>ITU WRC-27</strong> agenda on orbital carrying capacity. Legal proposals: orbital slot fees, binding debris mitigation, spectrum auction.</p>
+    </div>
+    <div class="card">
+      <h3><i class="fas fa-shield-haltered"></i> Space Weaponization</h3>
+      <p>No explicit ban on conventional ASATs. 2021 Russian ASAT created debris threatening ISS. UN resolution 77/41 (2022) moratorium on destructive tests. <strong>Woomera Manual (2022)</strong> applies IHL to space: distinction, proportionality, precautions.</p>
+    </div>
+    <div class="card">
+      <h3><i class="fas fa-trash-alt"></i> Debris & Environment</h3>
+      <p>~36,500 debris >10cm, 1 million >1cm. Kessler Syndrome risk. <strong>Zero Debris Charter (2023)</strong> by ESA targets 2030. Legal hurdles: ADR requires consent (Art VIII OST). Draft International Code of Conduct for space activities.</p>
+    </div>
+  </div>
+
+  <!-- DYNAMIC SECTION (7 topics) -->
+  <div class="dynamic-section">
+    <div class="section-title">
+      <i class="fas fa-landmark" id="dynamicIcon"></i>
+      <span id="dynamicTitle">Comprehensive Space Law Encyclopedia</span>
+    </div>
+    <div id="dynamicContent"></div>
+  </div>
+
+  <!-- Additional deep-dive: comparative national laws -->
+  <div class="info-grid">
+    <div class="card">
+      <h3><i class="fas fa-flag-usa"></i> United States</h3>
+      <p><strong>Commercial Space Launch Competitiveness Act (2015)</strong> — property rights in asteroid resources. FCC licensing for satellites. <strong>Artemis Accords</strong> leader. NASA's <strong>Moon to Mars</strong> legal framework. One Small Step Act protects Apollo sites.</p>
+    </div>
+    <div class="card">
+      <h3><i class="fas fa-flag-eu"></i> European Union</h3>
+      <p><strong>Luxembourg Space Law (2017)</strong> — mining rights. France: Space Operations Act (2008). Germany: national space law draft. EU Space Programme (2021) for Galileo, Copernicus. Supports Hague Building Blocks.</p>
+    </div>
+    <div class="card">
+      <h3><i class="fas fa-flag-china"></i> China & Russia</h3>
+      <p>China: National Space Law (draft) — peaceful use but military integration. <strong>International Lunar Research Station (ILRS)</strong> with Russia as Artemis alternative. Russia: Law on Space Activities (1993) — opposes unilateral resource claims.</p>
+    </div>
+  </div>
+
+  <!-- stats row -->
+  <div class="stats-row">
+    <div class="stat-card"><i class="fas fa-file-signature" style="font-size: 1.8rem; color: cyan;"></i><br><strong>114</strong><br>OST Parties</div>
+    <div class="stat-card"><i class="fas fa-satellite" style="font-size: 1.8rem; color: cyan;"></i><br><strong>10,000+</strong><br>Trackable objects</div>
+    <div class="stat-card"><i class="fas fa-balance-scale" style="font-size: 1.8rem; color: cyan;"></i><br><strong>29</strong><br>Artemis Signatories</div>
+    <div class="stat-card"><i class="fas fa-chart-line" style="font-size: 1.8rem; color: cyan;"></i><br><strong>$1.8T</strong><br>Projected space economy (2035)</div>
+  </div>
+
+  <!-- Extra: timeline and key dates -->
+  <div style="background: rgba(0, 12, 24, 0.6); border-radius: 2rem; padding: 1.5rem; margin: 1rem 0;">
+    <h3 style="font-size: 1.5rem; margin-bottom: 1rem;"><i class="fas fa-timeline"></i> Historic Milestones in Space Law</h3>
+    <div style="display: flex; flex-wrap: wrap; gap: 0.7rem; justify-content: space-between;">
+      <div style="background: #10213b; border-radius: 1rem; padding: 0.7rem; flex:1; min-width: 110px; text-align: center;"><strong>1957</strong><br>Sputnik</div>
+      <div style="background: #10213b; border-radius: 1rem; padding: 0.7rem; flex:1; min-width: 110px; text-align: center;"><strong>1967</strong><br>OST enters force</div>
+      <div style="background: #10213b; border-radius: 1rem; padding: 0.7rem; flex:1; min-width: 110px; text-align: center;"><strong>1972</strong><br>Liability Conv.</div>
+      <div style="background: #10213b; border-radius: 1rem; padding: 0.7rem; flex:1; min-width: 110px; text-align: center;"><strong>1979</strong><br>Moon Agreement</div>
+      <div style="background: #10213b; border-radius: 1rem; padding: 0.7rem; flex:1; min-width: 110px; text-align: center;"><strong>2015</strong><br>US Space Act</div>
+      <div style="background: #10213b; border-radius: 1rem; padding: 0.7rem; flex:1; min-width: 110px; text-align: center;"><strong>2020</strong><br>Artemis Accords</div>
+    </div>
+  </div>
+
+  <footer>
+    <i class="fas fa-chalkboard-user"></i> ASTROLEX · Definitive Resource — International treaties, customary law, critical theory, and future governance frameworks for outer space.<br>
+    <span style="font-family: 'Space Mono';">Res Communis · Common Heritage · Due Regard · Peaceful Purposes</span>
+  </footer>
+</div>
+
+<script>
+  // Three.js immersive starfield
+  const canvas = document.getElementById('canvas-bg');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  
+  const starGeometry = new THREE.BufferGeometry();
+  const starCount = 2800;
+  const starPositions = new Float32Array(starCount * 3);
+  for (let i = 0; i < starCount; i++) {
+    starPositions[i*3] = (Math.random() - 0.5) * 2000;
+    starPositions[i*3+1] = (Math.random() - 0.5) * 1000;
+    starPositions[i*3+2] = (Math.random() - 0.5) * 600 - 150;
+  }
+  starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+  const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.3, transparent: true, opacity: 0.7 });
+  const stars = new THREE.Points(starGeometry, starMaterial);
+  scene.add(stars);
+  
+  const ringGeo = new THREE.TorusGeometry(2.5, 0.07, 64, 600);
+  const ringMat = new THREE.MeshBasicMaterial({ color: 0x33ccff, transparent: true, opacity: 0.35 });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  scene.add(ring);
+  
+  camera.position.z = 5;
+  let time = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    time += 0.002;
+    stars.rotation.y = time * 0.08;
+    stars.rotation.x = Math.sin(time * 0.15) * 0.1;
+    ring.rotation.x = Math.sin(time) * 0.5;
+    ring.rotation.y = time * 0.3;
+    ring.rotation.z = time * 0.2;
+    renderer.render(scene, camera);
+  }
+  animate();
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+  
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.from(".hero h1", { duration: 1, y: 60, opacity: 0, ease: "power3.out" });
+  gsap.from(".card", { scrollTrigger: { trigger: ".info-grid", start: "top 85%" }, duration: 0.6, y: 30, opacity: 0, stagger: 0.08 });
+  
+  // MASSIVE CONTENT LIBRARY (7 topics)
+  const contentLibrary = {
+    treaties: {
+      title: "📜 Five UN Space Treaties (Full Analysis)",
+      icon: "fas fa-file-signature",
+      data: `<div><div class="treaty-item"><strong>Outer Space Treaty (1967)</strong> — 114 parties. Art I: freedom of exploration; Art II: non-appropriation; Art III: compliance with international law; Art IV: WMD ban; Art VI: state responsibility for NGOs; Art VII: liability; Art VIII: jurisdiction; Art IX: harmful interference; Art X-XV: cooperation & dispute resolution.</div>
+      <div class="treaty-item"><strong>Rescue Agreement (1968)</strong> — Obligation to rescue astronauts, return to launching state, notify UN.</div>
+      <div class="treaty-item"><strong>Liability Convention (1972)</strong> — Absolute liability for surface damage (Earth), fault liability in space. Art V: joint launches. Only claim: Cosmos 954 ($3M CAD).</div>
+      <div class="treaty-item"><strong>Registration Convention (1976)</strong> — UN registry, orbital parameters, state of registry.</div>
+      <div class="treaty-item"><strong>Moon Agreement (1979)</strong> — Common heritage of mankind (Art 11), moratorium on resource extraction until international regime, environmental protection (Art 7).</div>
+      <div class="quote-block"><i class="fas fa-gavel"></i> Customary status: Freedom of exploration, non-appropriation, and rescue are customary international law, binding all states.</div></div>`
+    },
+    principles: {
+      title: "⚖️ UNCOPUOS Principles & Soft Law Instruments",
+      icon: "fas fa-balance-scale",
+      data: `<div><div class="principle-item"><strong>Declaration of Legal Principles (1963)</strong> — precursor to OST, affirmed freedom of exploration.</div>
+      <div class="principle-item"><strong>Remote Sensing Principles (1986)</strong> — nondiscriminatory access to primary data, respect for sovereignty.</div>
+      <div class="principle-item"><strong>Nuclear Power Sources Principles (1992)</strong> — safety assessments, prior notification, liability for re-entry.</div>
+      <div class="principle-item"><strong>Space Debris Mitigation Guidelines (2007)</strong> — 25-year post-mission disposal, passivation, collision avoidance.</div>
+      <div class="principle-item"><strong>Long-Term Sustainability Guidelines (2019)</strong> — 21 guidelines: space traffic coordination, dark skies, registration, supernova avoidance.</div>
+      <div class="principle-item"><strong>Hague Building Blocks (2019)</strong> — 11 principles for space resources: transparency, prior consultation, benefit-sharing, international registry.</div>
+      <div class="quote-block"><i class="fas fa-chart-line"></i> These soft law instruments influence national legislation and customary law formation.</div></div>`
+    },
+    theory: {
+      title: "🧠 Advanced Space Law Theory & Doctrines",
+      icon: "fas fa-brain",
+      data: `<div><div class="theory-item"><strong>Jus Cogens in Space:</strong> Non-appropriation (OST Art II) and peaceful purposes are argued as peremptory norms. ILC Special Rapporteur suggests erga omnes obligations.</div>
+      <div class="theory-item"><strong>Critical Legal Geography:</strong> Orbital slots as finite commons; Bogotá Declaration (1976) claiming geostationary orbit as natural resource.</div>
+      <div class="theory-item"><strong>Feminist Jurisprudence:</strong> Inclusion of care ethics, reproductive rights in long-duration spaceflight, anti-colonial approaches to lunar governance.</div>
+      <div class="theory-item"><strong>Postcolonial Critique:</strong> Space law perpetuates Global North hegemony; need for UN-based inclusive framework and technology transfer.</div>
+      <div class="theory-item"><strong>Cosmopolitan Democracy:</strong> Proposal for World Space Organization (WSO) to manage resource extraction, spectrum, and dispute resolution.</div>
+      <div class="theory-item"><strong>Economic Theory:</strong> Coase theorem applied to asteroid mining — property rights essential but requires global registry and liability rules.</div>
+      <div class="quote-block"><i class="fas fa-dove"></i> <strong>Woomera Manual (2022)</strong> — applies IHL to space: distinction, proportionality, precautions, and environmental protection in armed conflict.</div></div>`
+    },
+    issues: {
+      title: "🚀 Critical Emerging Legal Fronts (2025-2030 Agenda)",
+      icon: "fas fa-satellite-dish",
+      data: `<div><div class="case-item"><strong>Mega-Constellations:</strong> Starlink, OneWeb, Kuiper — orbital carrying capacity, light pollution, ITU reform. Proposed: orbital slot fees and binding disposal.</div>
+      <div class="case-item"><strong>Lunar Settlements:</strong> No comprehensive governance. "Safety zones" under OST Art IX contested as creeping sovereignty. Lunar Governance Working Group proposes multilateral agreement.</div>
+      <div class="case-item"><strong>Asteroid Mining:</strong> US/Luxembourg national laws vs. Moon Agreement. Hague Building Blocks suggest international authorization mechanism.</div>
+      <div class="case-item"><strong>Space Tourism:</strong> Definition of "astronaut" under Rescue Agreement; criminal jurisdiction on commercial stations (Axiom, Orbital Reef).</div>
+      <div class="case-item"><strong>Space Weapons:</strong> ASAT testing moratorium (UN resolution 77/41). PPWT treaty stalled. Conventional space-based weapons not explicitly banned.</div>
+      <div class="case-item"><strong>Active Debris Removal:</strong> Ownership under Art VIII requires consent. No binding liability for debris generation. Zero Debris Charter (2030 target).</div></div>`
+    },
+    caselaw: {
+      title: "⚖️ Space Law Precedents & Arbitrations",
+      icon: "fas fa-gavel",
+      data: `<div><div class="case-item"><strong>Cosmos 954 (Canada v. USSR, 1979)</strong> — Only Liability Convention settlement. Nuclear debris over Canada; USSR paid CAD $3M — absolute liability precedent.</div>
+      <div class="case-item"><strong>Intelsat v. FCC (1990s)</strong> — US court decisions on orbital slot assignment influenced ITU first-come, first-served modifications.</div>
+      <div class="case-item"><strong>PCA Optional Rules for Space Disputes (2011)</strong> — Permanent Court of Arbitration framework for commercial and state disputes, including emergency arbitrator provisions.</div>
+      <div class="case-item"><strong>Moon Express (2016) — FAA Authorization</strong> — First private lunar mission authorized under OST Art IX "harmful interference" review.</div>
+      <div class="case-item"><strong>ICJ Advisory Opinion (1996) — Nuclear Weapons</strong> — Dicta referencing space law environmental protections.</div>
+      <div class="quote-block"><i class="fas fa-chalkboard"></i> Future: PCA arbitration over asteroid mining rights or lunar base interference — would test non-appropriation limit.</div></div>`
+    },
+    comparative: {
+      title: "🌍 Comparative National Space Legislation",
+      icon: "fas fa-globe",
+      data: `<div><div class="regime-item"><strong>United States:</strong> Commercial Space Launch Competitiveness Act (2015) — asteroid property rights. FCC licensing, Artemis Accords leader. One Small Step Act (Apollo sites).</div>
+      <div class="regime-item"><strong>Luxembourg/Europe:</strong> Space Law (2017) — mining rights. France (Space Ops Act 2008), Germany (draft). EU Space Programme 2021.</div>
+      <div class="regime-item"><strong>China:</strong> National Space Law (draft) — peaceful but military integration. ILRS with Russia. Opposes unilateral resource claims.</div>
+      <div class="regime-item"><strong>Russia:</strong> Law on Space Activities (1993) — favors Moon Agreement reinterpretation. Supports binding international regime.</div>
+      <div class="regime-item"><strong>India:</strong> Spacecom Policy 2020, IN-SPACe regulates private launches. Artemis Accords signatory (2023).</div>
+      <div class="regime-item"><strong>Japan:</strong> Basic Space Law (2008, rev 2021). Supports Hague Building Blocks. Private lunar missions (ispace).</div>
+      <div class="regime-item"><strong>UAE:</strong> National Space Law (2019) — asteroid resource rights. Mars Hope mission.</div></div>`
+    },
+    institutions: {
+      title: "🏛️ International Institutions & Governance Bodies",
+      icon: "fas fa-building",
+      data: `<div><div class="principle-item"><strong>UNCOPUOS (Committee on Peaceful Uses of Outer Space)</strong> — 100+ members. Legal Subcommittee drafts treaties and guidelines. Scientific and Technical Subcommittee.</div>
+      <div class="principle-item"><strong>ITU (International Telecommunication Union)</strong> — Manages radio-frequency spectrum and geostationary orbital slots. WRC conferences every 3-4 years.</div>
+      <div class="principle-item"><strong>PCA (Permanent Court of Arbitration)</strong> — Optional Rules for Space Disputes (2011). Designated space arbitrators list.</div>
+      <div class="principle-item"><strong>IAF (International Astronautical Federation)</strong> — IAC congresses, legal colloquia.</div>
+      <div class="principle-item"><strong>IADC (Inter-Agency Space Debris Coordination Committee)</strong> — Debris mitigation guidelines.</div>
+      <div class="principle-item"><strong>ESA (European Space Agency)</strong> — Independent legal framework, debris removal charter.</div>
+      <div class="quote-block"><i class="fas fa-chart-line"></i> Proposed: World Space Organization (WSO) for resource governance and dispute resolution.</div></div>`
+    }
+  };
+  
+  const dynamicContainer = document.getElementById('dynamicContent');
+  const dynamicTitleSpan = document.getElementById('dynamicTitle');
+  const dynamicIcon = document.getElementById('dynamicIcon');
+  const navButtons = document.querySelectorAll('.nav-btn');
+  
+  function updateContent(topicKey) {
+    const content = contentLibrary[topicKey];
+    if (!content) return;
+    navButtons.forEach(btn => {
+      if (btn.getAttribute('data-topic') === topicKey) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+    gsap.to(dynamicContainer, { duration: 0.2, opacity: 0, onComplete: () => {
+      dynamicTitleSpan.innerText = content.title;
+      dynamicIcon.className = content.icon;
+      dynamicContainer.innerHTML = content.data;
+      gsap.to(dynamicContainer, { duration: 0.3, opacity: 1 });
+    }});
+  }
+  
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const topic = btn.getAttribute('data-topic');
+      if (topic && contentLibrary[topic]) updateContent(topic);
+    });
+  });
+  updateContent('treaties');
+</script>
+</body>
+</html>

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ASTROLEX | 404 — Celestial Coordinates Not Found</title>
+  <link rel="icon" type="image/x-icon" href="images.jpeg">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #03050b;
+      font-family: 'Inter', sans-serif;
+      color: #eef5ff;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* Three.js canvas background */
+    #cosmic-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      display: block;
+    }
+
+    /* main content container */
+    .error-container {
+      position: relative;
+      z-index: 20;
+      max-width: 1300px;
+      margin: 2rem;
+      padding: 2rem;
+      backdrop-filter: blur(4px);
+      border-radius: 3rem;
+    }
+
+    /* glass-morph card */
+    .astral-card {
+      background: rgba(6, 14, 26, 0.65);
+      backdrop-filter: blur(18px);
+      border-radius: 3rem;
+      border: 1px solid rgba(0, 200, 255, 0.35);
+      padding: 3rem 2.5rem;
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 255, 255, 0.1);
+      transition: all 0.4s ease;
+      text-align: center;
+    }
+
+    .astral-card:hover {
+      border-color: #3efffa;
+      box-shadow: 0 40px 60px -20px rgba(0, 200, 255, 0.3), 0 0 0 2px rgba(62, 255, 250, 0.2);
+    }
+
+    .error-code {
+      font-size: 9rem;
+      font-weight: 800;
+      font-family: 'Syne', sans-serif;
+      background: linear-gradient(135deg, #FFFFFF, #7bc5ff, #a07eff, #3efffa);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.03em;
+      text-shadow: 0 0 30px rgba(0, 200, 255, 0.4);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .error-glow {
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 6px;
+      font-weight: 500;
+      color: #8acbff;
+      border-top: 1px dashed rgba(62, 255, 250, 0.5);
+      display: inline-block;
+      padding-top: 0.5rem;
+      margin-bottom: 1.8rem;
+    }
+
+    h2 {
+      font-size: 2.2rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      margin: 0.8rem 0 1rem;
+      background: linear-gradient(120deg, #fff, #9bd0ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .lost-message {
+      max-width: 600px;
+      margin: 0 auto 2rem auto;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #c7dcff;
+    }
+
+    .legal-quote {
+      background: rgba(0, 30, 55, 0.7);
+      border-left: 4px solid #3efffa;
+      padding: 1rem 1.6rem;
+      border-radius: 1.2rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.85rem;
+      margin: 1.8rem auto;
+      display: inline-block;
+      text-align: left;
+      max-width: 90%;
+    }
+
+    .legal-quote i {
+      color: #3efffa;
+      margin-right: 10px;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      justify-content: center;
+      margin: 2rem 0 1rem;
+    }
+
+    .btn-primary, .btn-secondary {
+      padding: 0.9rem 2rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 255, 255, 0.4);
+    }
+
+    .btn-primary {
+      background: #0f2b4f;
+      color: #eef5ff;
+      border-color: #3efffa;
+      box-shadow: 0 0 12px rgba(62, 255, 250, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: #164a78;
+      transform: translateY(-3px);
+      box-shadow: 0 0 20px rgba(62, 255, 250, 0.5);
+    }
+
+    .btn-secondary {
+      background: rgba(10, 20, 40, 0.7);
+      border-color: rgba(0, 180, 255, 0.5);
+    }
+
+    .btn-secondary:hover {
+      background: #102b4e;
+      border-color: #7bc5ff;
+      transform: translateY(-3px);
+    }
+
+    .constellation-links {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 0.8rem;
+    }
+
+    .constellation-links a {
+      color: #86b9ff;
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(0, 255, 255, 0.6);
+      transition: 0.2s;
+    }
+
+    .constellation-links a:hover {
+      color: #3efffa;
+      border-bottom: 1px solid #3efffa;
+    }
+
+    .status-badge {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 100px;
+      padding: 0.25rem 1rem;
+      display: inline-block;
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      font-family: 'Space Mono', monospace;
+      margin-bottom: 1.2rem;
+      border: 1px solid rgba(255, 100, 100, 0.6);
+      color: #ffb7b7;
+    }
+
+    @media (max-width: 700px) {
+      .error-code { font-size: 5rem; }
+      .astral-card { padding: 2rem 1.5rem; }
+      h2 { font-size: 1.6rem; }
+      .button-group { flex-direction: column; align-items: center; }
+      .btn-primary, .btn-secondary { width: 80%; justify-content: center; }
+      .error-container { margin: 1rem; padding: 0.5rem; }
+    }
+
+    footer {
+      margin-top: 2.5rem;
+      font-size: 0.7rem;
+      color: #5a7eaa;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<canvas id="cosmic-bg"></canvas>
+
+<div class="error-container">
+  <div class="astral-card">
+    <div class="status-badge">
+      <i class="fas fa-satellite"></i> SPACE OBJECT NOT FOUND · ORBIT UNKNOWN
+    </div>
+    <div class="error-code">404</div>
+    <div class="error-glow">LEX NON SCRIPTA · UNCHARTED VOID</div>
+    
+    <h2><i class="fas fa-globe" style="color: #3efffa; margin-right: 12px;"></i> Celestial Coordinates Untraceable</h2>
+    <div class="lost-message">
+      The requested legal instrument, space object, or cosmic treaty provision has either drifted beyond the Kármán line of our index, 
+      been lost in the debris field, or never existed in the corpus juris spatialis. <strong>Res Communis</strong> applies — but this page is not part of the common heritage.
+    </div>
+    
+    <div class="legal-quote">
+      <i class="fas fa-gavel"></i> <strong>Outer Space Treaty, Article VIII</strong> — “A State Party to the Treaty on whose registry an object launched into outer space is carried shall retain jurisdiction and control over such object.”<br>
+      <span style="font-size: 0.75rem;">↳ This object (404) has no registry entry. Return to <strong>ASTROLEX</strong> main encyclopedia.</span>
+    </div>
+    
+    <div class="button-group">
+      <a href="index.html" class="btn-primary"><i class="fas fa-rocket"></i> Return to ASTROLEX · Main Index</a>
+      <button id="randomLegalBtn" class="btn-secondary"><i class="fas fa-dice-d6"></i> Random Space Treaty Fact</button>
+    </div>
+    
+    <div id="randomFactBox" style="margin-top: 1.2rem; font-size: 0.85rem; background: rgba(0, 15, 30, 0.5); border-radius: 1.2rem; padding: 0.8rem 1rem; max-width: 500px; margin-left: auto; margin-right: auto; border: 1px dashed cyan; display: none;">
+      <i class="fas fa-star-of-life" style="color: #3efffa; margin-right: 8px;"></i> <span id="randomFactText"></span>
+    </div>
+    
+    <div class="constellation-links">
+      <a href="index.html#treaties"><i class="fas fa-file-contract"></i> Outer Space Treaty</a>
+      <a href="index.html#principles"><i class="fas fa-balance-scale"></i> UN Principles</a>
+      <a href="index.html#theory"><i class="fas fa-brain"></i> Critical Theory</a>
+      <a href="index.html#issues"><i class="fas fa-satellite-dish"></i> Emerging Issues</a>
+      <a href="index.html#caselaw"><i class="fas fa-gavel"></i> Case Law</a>
+    </div>
+    
+    <footer>
+      <i class="fas fa-chalkboard-user"></i> ASTROLEX · The Encyclopedia of Space Law & Jurisprudence — Article 404: no celestial body, precedent, or norm found at this URI.<br>
+      <span style="font-family: 'Space Mono';">“Ad astra per aspera” — navigate via stellar cartography above.</span>
+    </footer>
+  </div>
+</div>
+
+<script>
+  // ========================
+  // Three.js immersive deep-space background (enhanced cosmic scene)
+  // ========================
+  const canvas = document.getElementById('cosmic-bg');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  
+  // Starfield (dense)
+  const starGeometry = new THREE.BufferGeometry();
+  const starCount = 4000;
+  const starPositions = new Float32Array(starCount * 3);
+  for (let i = 0; i < starCount; i++) {
+    starPositions[i*3] = (Math.random() - 0.5) * 2000;
+    starPositions[i*3+1] = (Math.random() - 0.5) * 1200;
+    starPositions[i*3+2] = (Math.random() - 0.5) * 800 - 200;
+  }
+  starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+  const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.28, transparent: true, opacity: 0.8 });
+  const stars = new THREE.Points(starGeometry, starMaterial);
+  scene.add(stars);
+  
+  // secondary tiny stars (distant)
+  const starGeometry2 = new THREE.BufferGeometry();
+  const starCount2 = 1800;
+  const starPositions2 = new Float32Array(starCount2 * 3);
+  for (let i = 0; i < starCount2; i++) {
+    starPositions2[i*3] = (Math.random() - 0.5) * 2500;
+    starPositions2[i*3+1] = (Math.random() - 0.5) * 1500;
+    starPositions2[i*3+2] = (Math.random() - 0.5) * 1000 - 400;
+  }
+  starGeometry2.setAttribute('position', new THREE.BufferAttribute(starPositions2, 3));
+  const starMaterial2 = new THREE.PointsMaterial({ color: 0xaaccff, size: 0.15, transparent: true, opacity: 0.6 });
+  const stars2 = new THREE.Points(starGeometry2, starMaterial2);
+  scene.add(stars2);
+  
+  // cosmic ring (nebula-like)
+  const ringGeo = new THREE.TorusGeometry(2.8, 0.06, 64, 800);
+  const ringMat = new THREE.MeshBasicMaterial({ color: 0x33ccff, transparent: true, opacity: 0.25 });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  scene.add(ring);
+  
+  const ringGeo2 = new THREE.TorusGeometry(3.9, 0.04, 64, 800);
+  const ringMat2 = new THREE.MeshBasicMaterial({ color: 0xff66cc, transparent: true, opacity: 0.2 });
+  const ring2 = new THREE.Mesh(ringGeo2, ringMat2);
+  scene.add(ring2);
+  
+  // floating tiny particles (extra)
+  const particleCount = 800;
+  const particleGeo = new THREE.BufferGeometry();
+  const particlePos = [];
+  for (let i = 0; i < particleCount; i++) {
+    particlePos.push((Math.random() - 0.5) * 80);
+    particlePos.push((Math.random() - 0.5) * 50);
+    particlePos.push((Math.random() - 0.5) * 60 - 20);
+  }
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(particlePos), 3));
+  const particleMat = new THREE.PointsMaterial({ color: 0x88aaff, size: 0.08, transparent: true, opacity: 0.4 });
+  const particles = new THREE.Points(particleGeo, particleMat);
+  scene.add(particles);
+  
+  camera.position.z = 6;
+  let time = 0;
+  
+  function animateCosmic() {
+    requestAnimationFrame(animateCosmic);
+    time += 0.0025;
+    stars.rotation.y = time * 0.05;
+    stars.rotation.x = Math.sin(time * 0.1) * 0.05;
+    stars2.rotation.y = time * 0.03;
+    stars2.rotation.x = time * 0.02;
+    ring.rotation.x = Math.sin(time * 0.4) * 0.6;
+    ring.rotation.y = time * 0.2;
+    ring.rotation.z = time * 0.15;
+    ring2.rotation.x = Math.cos(time * 0.5) * 0.5;
+    ring2.rotation.z = time * 0.25;
+    ring2.rotation.y = time * 0.18;
+    particles.rotation.y = time * 0.01;
+    particles.rotation.x = Math.sin(time * 0.2) * 0.1;
+    renderer.render(scene, camera);
+  }
+  animateCosmic();
+  
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+  
+  // GSAP entrance animations
+  gsap.from(".astral-card", { duration: 0.9, scale: 0.96, opacity: 0, y: 30, ease: "back.out(0.4)" });
+  gsap.from(".error-code", { duration: 0.8, opacity: 0, y: -40, delay: 0.2, ease: "power2.out" });
+  gsap.from(".btn-primary, .btn-secondary", { duration: 0.6, opacity: 0, y: 20, stagger: 0.1, delay: 0.4 });
+  
+  // random space law fact generator (enhanced)
+  const spaceLawFacts = [
+    "The Outer Space Treaty of 1967 has been ratified by 114 nations, including all major spacefaring countries.",
+    "Article II of the OST prohibits national appropriation by claims of sovereignty, use, or occupation — no 'land grabs' on the Moon.",
+    "The Rescue Agreement (1968) requires states to render all possible assistance to astronauts in distress.",
+    "Liability Convention: Absolute liability for damage caused by space objects on Earth's surface — even if no fault.",
+    "Only once has the Liability Convention been invoked: Cosmos 954 (Canada v. USSR) settled for CAD $3 million.",
+    "The Moon Agreement (1979) declares the Moon and its natural resources the 'common heritage of mankind' — only 18 parties.",
+    "Space debris: Over 36,500 objects larger than 10 cm are tracked, and only a fraction are operational satellites.",
+    "UNCOPUOS has 100+ member states and developed five major space treaties plus soft-law guidelines.",
+    "The 1976 Bogotá Declaration claimed geostationary orbit as a natural resource of equatorial countries.",
+    "Artemis Accords (2020): 29 signatories (as of 2026) focusing on safety zones and lunar resource extraction.",
+    "The Woomera Manual (2022) applies International Humanitarian Law principles to space warfare: distinction, proportionality.",
+    "Commercial space mining: US Commercial Space Launch Competitiveness Act (2015) grants property rights to asteroid resources.",
+    "The Hague Building Blocks (2019) propose an international framework for space resource activities.",
+    "ITU manages orbital slots and radio spectrum — 'first-come, first-served' principle causes congestion concerns.",
+    "Zero Debris Charter (ESA-led, 2023) aims for debris-neutral space by 2030.",
+    "China & Russia's ILRS (International Lunar Research Station) is an alternative to the Artemis program.",
+    "The Registration Convention (1976) requires states to maintain a registry of space objects and report to the UN.",
+    "Non-appropriation & freedom of exploration are considered customary international law, binding all states.",
+    "The Permanent Court of Arbitration (PCA) has optional rules for space disputes since 2011.",
+    "Astronauts are regarded as 'envoys of mankind' under the Outer Space Treaty — no sovereign distinction.",
+    "The Kessler Syndrome warns of cascading debris collisions, making orbits unusable."
+  ];
+  
+  const randomBtn = document.getElementById('randomLegalBtn');
+  const factBox = document.getElementById('randomFactBox');
+  const factTextSpan = document.getElementById('randomFactText');
+  
+  randomBtn.addEventListener('click', () => {
+    const randomIndex = Math.floor(Math.random() * spaceLawFacts.length);
+    const randomFact = spaceLawFacts[randomIndex];
+    factTextSpan.innerText = randomFact;
+    if (factBox.style.display === 'none') {
+      factBox.style.display = 'block';
+      gsap.fromTo(factBox, { opacity: 0, y: -10 }, { duration: 0.4, opacity: 1, y: 0 });
+    } else {
+      gsap.to(factBox, { duration: 0.2, opacity: 0, onComplete: () => {
+        factTextSpan.innerText = randomFact;
+        gsap.to(factBox, { duration: 0.3, opacity: 1 });
+      }});
+    }
+    // tiny haptic-like animation
+    gsap.fromTo(randomBtn, { scale: 1 }, { scale: 0.96, duration: 0.1, yoyo: true, repeat: 1 });
+  });
+  
+  // hover constellation links - add subtle glow
+  document.querySelectorAll('.constellation-links a').forEach(link => {
+    link.addEventListener('mouseenter', (e) => {
+      gsap.to(e.target, { duration: 0.2, textShadow: "0 0 6px cyan", color: "#e6f7ff" });
+    });
+    link.addEventListener('mouseleave', (e) => {
+      gsap.to(e.target, { duration: 0.2, textShadow: "none", color: "#86b9ff" });
+    });
+  });
+  
+  // for completeness: optional redirection simulation for any missing link within page (just style)
+  // manual anchor repair if needed? but main link to index.html is already set
+</script>
+</body>
+</html>
